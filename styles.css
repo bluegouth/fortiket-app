@@ -500,6 +500,49 @@ p, label, span, strong {
   background: #f2f2f2;
 }
 
+/* floating heart animation for reaction */
+.floating-heart {
+  position: absolute;
+  font-size: 18px;
+  pointer-events: none;
+  transform: translateY(0) scale(1);
+  animation: floatUp 900ms cubic-bezier(.2,.9,.2,1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(10px) scale(0.6); }
+  30% { opacity: 1; transform: translateY(-6px) scale(1.15); }
+  100% { opacity: 0; transform: translateY(-64px) scale(1); }
+}
+
+/* pressed and correct states for response buttons */
+.story-choice {
+  transition: background-color 220ms ease, transform 160ms ease, color 160ms ease;
+}
+.story-choice.pressed {
+  transform: translateY(2px) scale(0.99);
+  filter: brightness(0.95);
+}
+.story-choice.correct {
+  background: linear-gradient(90deg,#35c759,#2fbf51);
+  color: white;
+}
+.story-choice.wrong {
+  background: #f8d7da;
+  color: #86181d;
+}
+
+/* slide-away animation for synthetic post card */
+.synthetic-post-card {
+  transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms ease;
+}
+.synthetic-post-card.slide-away {
+  transform: translateY(120%);
+  opacity: 0;
+}
+
+
 .synth-post-shell {
   position: relative;
   overflow: hidden;

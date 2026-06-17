@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>포티켓 챌린지</title>
+  <title>포티켓 캠페인</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -12,7 +12,7 @@
       <div class="title-group">
         <div class="logo">📸</div>
         <div>
-          <h1>포티켓 챌린지</h1>
+          <h1>포티켓 캠페인</h1>
           <p>도장을 모으며 사진 피해 예방 체험을 해보세요.</p>
         </div>
       </div>
@@ -22,20 +22,19 @@
       <section id="home" class="page-section">
         <div class="section-head">
           <h2>홈</h2>
-          <p>도장을 눌러 체험을 시작하세요.</p>
         </div>
 
         <div class="stamp-grid">
           <button class="stamp-card" data-page="quiz" id="quiz-card">
-            <div class="stamp-icon" id="quiz-icon">⭕</div>
+            <div class="stamp-icon" id="quiz-icon">📝</div>
             <strong>퀴즈</strong>
           </button>
           <button class="stamp-card" data-page="spot" id="spot-card">
-            <div class="stamp-icon" id="spot-icon">⭕</div>
+            <div class="stamp-icon" id="spot-icon">🔍</div>
             <strong>틀린 그림 찾기</strong>
           </button>
           <button class="stamp-card" data-page="story" id="ai-card">
-            <div class="stamp-icon" id="ai-icon">⭕</div>
+            <div class="stamp-icon" id="ai-icon">🎭</div>
             <strong>AI 합성 체험</strong>
           </button>
         </div>
@@ -212,7 +211,7 @@
       <section id="story-scroll" class="page-section hidden">
         <div class="subheader">
           <button class="nav-button" data-page="home">⬅ 홈으로</button>
-          <h2>📱 인스타 스토리</h2>
+          <h2>📱 가상 상황</h2>
         </div>
 
         <div id="story-scroll-shell" class="story-scroll-shell">
@@ -281,11 +280,13 @@
             <div class="story-choice-grid">
               <button type="button" class="secondary-button story-choice" data-choice="angry">댓글로 바로 싸운다</button>
               <button type="button" class="secondary-button story-choice" data-choice="ignore">무서우니 아무것도 하지 않는다</button>
-              <button type="button" class="primary-button story-choice" data-choice="safe">증거 확보 후 신고하고 도움 요청</button>
+              <button type="button" class="secondary-button story-choice" data-choice="safe">증거 확보 후 신고하고 도움 요청</button>
             </div>
             <div id="story-choice-result" class="story-choice-result hidden"></div>
-            <button class="primary-button" data-page="home">홈으로 돌아가기</button>
           </div>
+        </div>
+        <div class="form-actions" style="margin-top:12px;">
+          <button class="primary-button" data-page="home">홈으로 돌아가기</button>
         </div>
       </section>
     </main>

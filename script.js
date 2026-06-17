@@ -109,9 +109,9 @@ function setPage(page) {
 function updateStamps() {
   const total = Number(state.quizStamp) + Number(state.spotStamp) + Number(state.aiStamp);
   stampCount.textContent = `${total}/3`;
-  quizIcon.textContent = state.quizStamp ? "🏅" : "⭕";
-  spotIcon.textContent = state.spotStamp ? "🏅" : "⭕";
-  aiIcon.textContent = state.aiStamp ? "🏅" : "⭕";
+  quizIcon.textContent = state.quizStamp ? "🏅" : "📝";
+  spotIcon.textContent = state.spotStamp ? "🏅" : "🔍";
+  aiIcon.textContent = state.aiStamp ? "🏅" : "🎭";
 
   if (total === 3) {
     completionMessage.textContent = "🏆 모든 도장을 획득했습니다.";
@@ -515,21 +515,113 @@ function showSyntheticPost() {
 
 function applyStoryStepEffect(step) {
   if (step === "reaction") {
-    storyLikeCount.textContent = "❤️ 84";
-    storyCommentCount.textContent = "💬 12";
-    storyShareCount.textContent = "↗ 공유 3";
+    // play reaction animation and gradually update counts
+    triggerReactions();
   }
 
   if (step === "spread") {
-    storyLikeCount.textContent = "❤️ 326";
-    storyCommentCount.textContent = "💬 37";
-    storyShareCount.textContent = "↗ 공유 15";
+    triggerReactions(8, { likes: 326, comments: 37, shares: 15 });
   }
 
   if (step === "synthetic" || step === "mocking" || step === "response") {
     showSyntheticPost();
   }
 }
+
+function triggerReactions(times = 6, finalCounts = { likes: 84, comments: 12, shares: 3 }) {
+  const baseLikes = parseInt((storyLikeCount.textContent || '❤️ 0').replace(/[^0-9]/g, '')) || 0;
+  let created = 0;
+  const interval = setInterval(() => {
+    spawnHeart();
+    created += 1;
+    const current = baseLikes + created * Math.round((finalCounts.likes - baseLikes) / times || 1);
+    storyLikeCount.textContent = `❤️ ${current}`;
+    if (created >= times) {
+      clearInterval(interval);
+      storyLikeCount.textContent = `❤️ ${finalCounts.likes}`;
+      storyCommentCount.textContent = `💬 ${finalCounts.comments}`;
+      storyShareCount.textContent = `↗ 공유 ${finalCounts.shares}`;
+    }
+  }, 180);
+}
+
+function spawnHeart() {
+  const shell = document.querySelector('.synth-post-shell') || storyScrollShell;
+  if (!shell) return;
+  const heart = document.createElement('span');
+  heart.className = 'floating-heart';
+  heart.textContent = '❤️';
+  // position near like count
+  const rect = shell.getBoundingClientRect();
+  heart.style.left = `${Math.floor(Math.random() * (rect.width * 0.6)) + 12}px`;
+  heart.style.top = `${rect.height - 32}px`;
+  shell.appendChild(heart);
+  setTimeout(() => {
+    heart.remove();
+  }, 1000);
+}
+
+// handle response button interactions
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.story-choice');
+  if (!btn) return;
+
+  // reset other choice button visual states
+  document.querySelectorAll('.story-choice').forEach((b) => {
+    if (b !== btn) {
+      b.classList.remove('correct', 'wrong', 'pressed');
+    }
+  });
+
+  // visual press
+  btn.classList.add('pressed');
+  setTimeout(() => btn.classList.remove('pressed'), 160);
+
+  // clear previous result state
+  storyChoiceResult.classList.remove('success', 'warning');
+
+  // mark correctness
+  if (btn.dataset.choice === 'safe') {
+    btn.classList.add('correct');
+    // slide away the synthetic post if present and show congrats
+    if (syntheticPostCard) {
+      syntheticPostCard.classList.add('slide-away');
+      syntheticPostCard.addEventListener('transitionend', () => {
+        syntheticPostCard.classList.add('hidden');
+        syntheticPostCard.classList.remove('slide-away');
+      }, { once: true });
+    }
+    storyChoiceResult.classList.remove('hidden');
+    storyChoiceResult.classList.add('success');
+    storyChoiceResult.textContent = '정답입니다! 도움을 요청하고 신고한 후 상황을 정리했어요. 잘 대처했습니다.';
+    if (!state.aiStamp) {
+      state.aiStamp = true;
+      updateStamps();
+      completionMessage.textContent = '🏅 스토리 대처 도장을 획득했습니다!';
+    }
+
+    // append follow-up story section after help request
+    const followUp = document.createElement('div');
+    followUp.className = 'story-scroll-section hidden';
+    followUp.dataset.storyStep = 'after-help';
+    followUp.innerHTML = `
+      <h3>도움 요청 후 상황</h3>
+      <p>신고와 도움 요청으로 합성 유포는 빠르게 차단되었고, 피해는 최소화되었습니다. 지원 기관과 함께 대응을 계속합니다.</p>
+    `;
+    storyScrollShell.appendChild(followUp);
+    storyScrollSections.push(followUp);
+    // reveal the new follow-up section immediately
+    revealNextStorySection();
+
+  } else {
+    btn.classList.add('wrong');
+    storyChoiceResult.classList.remove('hidden');
+    storyChoiceResult.classList.add('warning');
+    storyChoiceResult.textContent = btn.dataset.choice === 'angry'
+      ? '댓글 싸움은 상황을 악화시킬 수 있습니다. 증거를 보관하고 신고하세요.'
+      : '아무 행동을 하지 않으면 유포가 지속될 수 있습니다. 증거 보관과 도움 요청을 고려하세요.';
+  }
+});
 
 function showSpotMarker(x, y, success) {
   const rect = spotRightImage.getBoundingClientRect();
@@ -688,6 +780,14 @@ function resetStoryScrollSections() {
   });
   storyChoiceResult.classList.add("hidden");
   storyChoiceResult.textContent = "";
+  // ensure the end section (홈으로 돌아가기) is always the last child
+  const endSection = document.querySelector('.story-scroll-end');
+  if (endSection && storyScrollShell) {
+    storyScrollShell.appendChild(endSection);
+  }
+  // refresh the ordered list of story sections
+  storyScrollSections.length = 0;
+  storyScrollSections.push(...Array.from(document.querySelectorAll('.story-scroll-section')));
 }
 
 function revealNextStorySection() {
@@ -705,7 +805,7 @@ function revealNextStorySection() {
 
   if (state.storyScrollIndex === storyScrollSections.length) {
     storyChoiceResult.classList.remove("hidden");
-    storyChoiceResult.textContent = "대처 방법을 선택해 주세요.";
+    storyChoiceResult.textContent = "잘하셨어요! 올바르게 대처할 준비가 되었습니다.";
   }
 }
 

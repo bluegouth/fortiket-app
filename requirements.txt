@@ -1,4 +1,0 @@
-streamlit
-Pillow
-streamlit-image-coordinates
-streamlit-image-zoom
