@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>포티켓 챌린지</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header>
+      <div class="title-group">
+        <div class="logo">📸</div>
+        <div>
+          <h1>포티켓 챌린지</h1>
+          <p>도장을 모으며 사진 피해 예방 체험을 해보세요.</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="home" class="page-section">
+        <div class="section-head">
+          <h2>홈</h2>
+          <p>도장을 눌러 체험을 시작하세요.</p>
+        </div>
+
+        <div class="stamp-grid">
+          <button class="stamp-card" data-page="quiz" id="quiz-card">
+            <div class="stamp-icon" id="quiz-icon">⭕</div>
+            <strong>퀴즈</strong>
+          </button>
+          <button class="stamp-card" data-page="spot" id="spot-card">
+            <div class="stamp-icon" id="spot-icon">⭕</div>
+            <strong>틀린 그림 찾기</strong>
+          </button>
+          <button class="stamp-card" data-page="ai" id="ai-card">
+            <div class="stamp-icon" id="ai-icon">⭕</div>
+            <strong>AI 합성 체험</strong>
+          </button>
+        </div>
+
+        <div class="status-panel">
+          <div class="status-item">
+            <span>획득한 도장</span>
+            <strong id="stamp-count">0/3</strong>
+          </div>
+          <div class="status-item" id="completion-message"></div>
+        </div>
+      </section>
+
+      <section id="quiz" class="page-section hidden">
+        <div class="subheader">
+          <button class="nav-button" data-page="home">⬅ 홈으로</button>
+          <h2>📝 퀴즈</h2>
+        </div>
+
+        <form id="quiz-form" class="quiz-form">
+          <fieldset>
+            <legend>1. 사진 관련 피해를 예방하는 방법으로 적절하지 않은 것은?</legend>
+            <label><input type="radio" name="q1" value="a" required /> 친구 사진을 올리기 전에 동의를 받는다</label>
+            <label><input type="radio" name="q1" value="b" /> 개인정보가 보이는 사진은 올리지 않는다</label>
+            <label><input type="radio" name="q1" value="c" /> SNS 공개 범위를 설정한다</label>
+            <label><input type="radio" name="q1" value="d" /> 허락받고 찍었으니 마음대로 업로드한다</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>2. 초상권 보호의 근거가 되는 법은?</legend>
+            <label><input type="radio" name="q2" value="a" required /> 특허법</label>
+            <label><input type="radio" name="q2" value="b" /> 개인정보보호법</label>
+            <label><input type="radio" name="q2" value="c" /> 헌법</label>
+            <label><input type="radio" name="q2" value="d" /> 초상권보호법</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>3. 원치 않는 사진이 게시되었을 때 가장 먼저 해야 할 행동은?</legend>
+            <label><input type="radio" name="q3" value="a" required /> 친구들에게 퍼뜨린다</label>
+            <label><input type="radio" name="q3" value="b" /> 증거 확보 후 도움 요청</label>
+            <label><input type="radio" name="q3" value="c" /> 참고 넘긴다</label>
+            <label><input type="radio" name="q3" value="d" /> 계정 삭제</label>
+          </fieldset>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-button">채점하기</button>
+          </div>
+        </form>
+
+        <div id="quiz-result" class="result-box hidden"></div>
+      </section>
+
+      <section id="spot" class="page-section hidden">
+        <div class="subheader">
+          <button class="nav-button" data-page="home">⬅ 홈으로</button>
+          <h2>🔍 틀린 그림 찾기</h2>
+        </div>
+
+        <div class="spot-info">
+          <p id="spot-stage-text">문제를 풀어 도장을 얻어보세요.</p>
+          <p id="spot-status">찾음: <strong id="spot-found-count">0</strong> / <strong id="spot-total-count">0</strong></p>
+        </div>
+
+        <div class="spot-layout">
+          <div class="spot-card">
+            <h3>원본</h3>
+            <img id="spot-left-image" src="images/1-1.png" alt="원본 이미지" />
+          </div>
+          <div class="spot-card">
+            <h3>틀린 그림</h3>
+            <div class="spot-image-shell" id="spot-shell">
+              <img id="spot-right-image" src="images/1-2.png" alt="수정본 이미지" />
+              <div class="spot-click-markers" id="spot-click-markers"></div>
+              <div class="spot-click-marker hidden" id="spot-click-marker"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button id="spot-reset" class="secondary-button">다시 시작</button>
+          <button id="spot-next" class="primary-button hidden">다음 문제</button>
+        </div>
+      </section>
+
+      <section id="ai" class="page-section hidden">
+        <div class="subheader">
+          <button class="nav-button" data-page="home">⬅ 홈으로</button>
+          <h2>🤖 AI 합성 피해 체험</h2>
+        </div>
+
+        <div class="ai-card">
+          <p>현재 준비 중입니다.</p>
+          <button id="ai-complete" class="primary-button">임시 완료</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
