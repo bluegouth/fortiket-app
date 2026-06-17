@@ -2224,3 +2224,492 @@ p, label, span, strong {
   font-size: 0.8rem;
 }
 
+
+/* ==========================================================================
+   HIDDEN DINO AR CAMERA MISSION (STAMP CARD & VIEWFINDER GRID)
+   ========================================================================== */
+
+/* Locked Stamp Card State */
+.stamp-card.locked {
+  background: #0f172a !important;
+  border: 2px dashed rgba(255, 255, 255, 0.12) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.45 !important;
+  filter: grayscale(1) !important;
+  pointer-events: none !important;
+}
+.stamp-card.locked .stamp-icon {
+  color: #64748b !important;
+}
+.stamp-card.locked strong {
+  color: #475569 !important;
+}
+
+/* Neon animated glow for unlocked hidden mission */
+@keyframes neonDinoGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2), 0 8px 30px rgba(0, 0, 0, 0.3);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.7), 0 8px 30px rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.9);
+    transform: scale(1.04) translateY(-2px);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2), 0 8px 30px rgba(0, 0, 0, 0.3);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+}
+
+.stamp-card.unlocked-glow {
+  background: #1e293b !important;
+  border: 2px solid #10b981 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  animation: neonDinoGlow 2s infinite ease-in-out;
+}
+.stamp-card.unlocked-glow .stamp-icon {
+  color: inherit !important;
+}
+.stamp-card.unlocked-glow strong {
+  color: #fff !important;
+}
+
+/* Dinosaur AR Layout */
+.dino-interactive-layout {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .dino-interactive-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dino-camera-view-card {
+  background: #0f172a;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.camera-lens-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.sensor-dot {
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: pulse-red 1s infinite alternate;
+}
+
+@keyframes pulse-red {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; box-shadow: 0 0 8px #ef4444; }
+}
+
+/* AR Viewfinder Shell */
+.dino-viewfinder-shell {
+  width: 100%;
+  height: 420px;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  background: #020617;
+  border: 2px solid #334155;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Camera Grid Lines */
+.camera-grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.camera-grid-lines::before {
+  content: '';
+  position: absolute;
+  top: 33.33%;
+  left: 0;
+  width: 100%;
+  height: 33.33%;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+}
+.camera-grid-lines::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 33.33%;
+  width: 33.33%;
+  height: 100%;
+  border-left: 1px dashed rgba(255, 255, 255, 0.12);
+  border-right: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+#dino-webcam-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+#dino-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Interactive Sprite Wrapper */
+.interactive-dino-sprite {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  cursor: grab;
+  z-index: 5;
+  user-select: none;
+  touch-action: none;
+}
+.interactive-dino-sprite:active {
+  cursor: grabbing;
+}
+
+.dino-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.55));
+}
+
+/* Leg walk keyframe animations */
+@keyframes walk-left {
+  0% { transform: rotate(-22deg); }
+  100% { transform: rotate(22deg); }
+}
+@keyframes walk-right {
+  0% { transform: rotate(22deg); }
+  100% { transform: rotate(-22deg); }
+}
+
+.dino-left-leg {
+  transform-origin: 38px 72px;
+  animation: walk-left 0.45s infinite alternate ease-in-out;
+}
+.dino-right-leg {
+  transform-origin: 48px 72px;
+  animation: walk-right 0.45s infinite alternate ease-in-out;
+}
+
+/* Wing flap animations for Pteranodon */
+@keyframes flap-left {
+  0% { transform: rotate(-18deg); }
+  100% { transform: rotate(18deg); }
+}
+@keyframes flap-right {
+  0% { transform: rotate(18deg); }
+  100% { transform: rotate(-18deg); }
+}
+
+.pteranodon-left-wing {
+  transform-origin: 50px 45px;
+  animation: flap-left 0.35s infinite alternate ease-in-out;
+}
+.pteranodon-right-wing {
+  transform-origin: 50px 45px;
+  animation: flap-right 0.35s infinite alternate ease-in-out;
+}
+
+/* Approved Polaroid stamp watermark */
+.polaroid-certified-stamp {
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  border: 4px solid #10b981;
+  color: #10b981;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 8px;
+  transform: rotate(-15deg);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  z-index: 15;
+  background: rgba(15, 23, 42, 0.7);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+/* Camera click shutter flash overlay */
+.camera-flash-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+.camera-flash-overlay.flash-active {
+  animation: shutterFlash 0.35s ease-out;
+}
+
+@keyframes shutterFlash {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Right Controls Panel styles */
+.dino-controls-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dino-narrative-card {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.control-section-header {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #38bdf8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 14px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 4px;
+}
+
+/* Buttons for Preset BG and Dinosaur Selection */
+.dino-bg-presets, .dino-presets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.preset-btn, .dino-preset-btn {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  color: #cbd5e1;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.preset-btn:hover, .dino-preset-btn:hover {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.3);
+  transform: translateY(-1px);
+}
+
+.preset-btn.active, .dino-preset-btn.active {
+  background: rgba(56, 189, 248, 0.15) !important;
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.dino-emoji {
+  font-size: 1.6rem;
+}
+
+.bg-source-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.dino-action-btn {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1.5px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #f1f5f9;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dino-action-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #38bdf8;
+}
+
+/* Sliders */
+.slider-adjustment-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(15,23,42,0.3);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.adjustment-item {
+  display: grid;
+  grid-template-columns: 80px 1fr 45px;
+  align-items: center;
+  gap: 12px;
+}
+
+.adj-label {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.adj-val {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #38bdf8;
+  text-align: right;
+}
+
+.premium-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #334155;
+  outline: none;
+}
+.premium-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #38bdf8;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+  transition: transform 0.1s;
+}
+.premium-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Polaroid Card Completion styling */
+.polaroid-card {
+  max-width: 440px !important;
+  background: #1e293b !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.polaroid-frame {
+  background: #fff;
+  padding: 16px 16px 24px 16px;
+  border-radius: 10px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.polaroid-photo-area {
+  width: 100%;
+  height: 270px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+}
+
+#polaroid-composite-container canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.polaroid-caption {
+  text-align: center;
+  padding-top: 10px;
+}
+.polaroid-caption h3 {
+  font-family: 'Outfit', sans-serif;
+  color: #1e293b;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+.polaroid-caption p {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin: 4px 0 0 0;
+}
+
+/* Radar Sweep and Blink Animations */
+@keyframes sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.85);
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+}
+
+

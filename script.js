@@ -3,6 +3,7 @@ const state = {
   quizStamp: false,
   spotStamp: false,
   aiStamp: false,
+  dinoUnlocked: false,
   aiImageUrl: null,
   aiFaceDetected: false,
   aiSelection: null,
@@ -98,7 +99,9 @@ const pageButtons = Array.from(document.querySelectorAll("[data-page]"));
 function setPage(page) {
   state.page = page;
   Object.values(pageSections).forEach((section) => {
-    section.classList.toggle("hidden", section.id !== page);
+    if (section) {
+      section.classList.toggle("hidden", section.id !== page);
+    }
   });
   if (page === "spot") {
     renderSpot();
@@ -110,13 +113,33 @@ function setPage(page) {
 
 function updateStamps() {
   const total = Number(state.quizStamp) + Number(state.spotStamp) + Number(state.aiStamp);
+
+  // If we collected all 3 basic stamps, unlock the physical dino special mission
+  if (total === 3 && !state.dinoUnlocked) {
+    state.dinoUnlocked = true;
+    unlockDinoMission(); 
+  }
+
   stampCount.textContent = `${total}/3`;
+
   quizIcon.textContent = state.quizStamp ? "🏅" : "📝";
   spotIcon.textContent = state.spotStamp ? "🏅" : "🔍";
   aiIcon.textContent = state.aiStamp ? "🏅" : "🎭";
 
+  const dinoIcon = document.getElementById("dino-icon");
+  const dinoCard = document.getElementById("dino-card");
+  if (dinoIcon) {
+    dinoIcon.textContent = state.dinoUnlocked ? "🎁" : "🔒";
+  }
+
+  if (dinoCard && state.dinoUnlocked) {
+    dinoCard.classList.remove("locked");
+    dinoCard.classList.add("unlocked-glow");
+    dinoCard.removeAttribute("disabled");
+  }
+
   if (total === 3) {
-    completionMessage.textContent = "🏆 모든 도장을 획득했습니다.";
+    completionMessage.innerHTML = "🏆 축하합니다! 모든 체험 도장(3/3)을 획득하셨습니다!<br>우측의 [🎁 특별 상품 미션] 카드를 눌러 오프라인 특별 미션에 참여해 보세요! 🦖✨";
   } else {
     completionMessage.textContent = "";
   }
@@ -1611,3 +1634,39 @@ function spawnSafeHeart() {
     heart.remove();
   }, parseFloat(randomDuration) * 1000);
 }
+
+// ==========================================
+// 🦖 HIDDEN DINO SPECIAL REAL-LIFE ALERT SYSTEM 📡
+// ==========================================
+
+// Trigger Dino Unlock Modal popup
+function unlockDinoMission() {
+  const unlockModal = document.getElementById("dino-unlock-modal");
+  if (unlockModal) {
+    unlockModal.classList.remove("hidden");
+  }
+}
+
+// ------------------------------------------
+// 🛠️ Register Interactive Dino Event Listeners
+// ------------------------------------------
+
+document.addEventListener("DOMContentLoaded", () => {
+  const closeDinoModalBtn = document.getElementById("close-dino-unlock-modal");
+  if (closeDinoModalBtn) {
+    closeDinoModalBtn.addEventListener("click", () => {
+      document.getElementById("dino-unlock-modal").classList.add("hidden");
+    });
+  }
+
+  const dinoCard = document.getElementById("dino-card");
+  if (dinoCard) {
+    dinoCard.addEventListener("click", () => {
+      if (state.dinoUnlocked) {
+        unlockDinoMission();
+      }
+    });
+  }
+});
+
+
