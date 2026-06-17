@@ -2,7 +2,6 @@ import math
 from PIL import Image
 import time
 
-from streamlit_image_zoom import image_zoom
 import streamlit as st
 from streamlit_image_coordinates import streamlit_image_coordinates
 
@@ -231,20 +230,13 @@ elif st.session_state.page == "quiz":
 
 elif st.session_state.page == "spot":
 
-    if "answer_maker" not in st.session_state:
-        st.session_state.answer_maker = []
-
-    ADMIN_MODE = True
+    PLAY_MODE = False
 
     back_button()
 
     st.title("🔍 틀린 그림 찾기")
 
-    ANSWERS_1 = [
-        (300, 250),
-        (500, 450),
-        (700, 600)
-    ]
+    ANSWERS_1 = [(1024, 51), (1391, 611), (870, 793), (554, 844)]
 
     ANSWERS_2 = [
         (200, 300),
@@ -258,18 +250,19 @@ elif st.session_state.page == "spot":
 
         st.subheader("문제 1")
 
-        st.markdown("### 원본")
+        img1 = Image.open("images/1-1.png")
+        img2 = Image.open("images/1-2.png")
 
-        image_zoom(
-            Image.open("images/1-1.png")
-        )
+        WIDTH = 700
+
+        st.markdown("### 원본")
+        st.image(img1, width=WIDTH)
 
         st.markdown("### 수정본")
 
-        img = Image.open("images/1-2.png")
-
         value = streamlit_image_coordinates(
-            img,
+            img2,
+            width=WIDTH,
             key="problem1"
         )
 
@@ -277,24 +270,32 @@ elif st.session_state.page == "spot":
             f"찾음: {len(st.session_state.found_1)} / {len(ANSWERS_1)}"
         )
 
-        if value:
+        if value and PLAY_MODE:
 
-            point = (
-                value["x"],
-                value["y"]
+            x = value["x"]
+            y = value["y"]
+
+            st.info(f"X={x}, Y={y}")
+
+            idx = check_rect(
+                x,
+                y,
+                ANSWERS_1,
+                st.session_state.found_1
             )
 
-            st.info(
-                f"X={point[0]}, Y={point[1]}"
-            )
-
-            if point not in st.session_state.answer_maker:
-                st.session_state.answer_maker.append(point)
+            if idx is not None:
         
-        with st.expander("좌표 확인"):
+                st.session_state.found_1.append(idx)
 
+                st.success(
+                    f"{ANSWERS_1[idx]['name']} 발견!"
+                )
+
+                st.rerun()
+        else:
             st.code(
-                repr(st.session_state.answer_maker)
+                f"x={value['x']}, y={value['y']}"
             )
 
     # 문제2
